@@ -8,19 +8,26 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 import com.google.gson.Gson;
 
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.Session;
+
 @Component
 @RequiredArgsConstructor
 public class Producer {
 
     private final JmsTemplate jmsTemplate;
+    private final Session session;
 
-    @Value("${activemq.name}")
-    private String destinationQueue;
+    @Value("${activemq.topic-name}")
+    private String destinationTopic;
 
-    public void send(Person person){
+    public void send(Person person) throws JMSException {
         Gson gson = new Gson();
         String jsonPerson = gson.toJson(person);
-        jmsTemplate.convertAndSend(destinationQueue, jsonPerson);
+        Message message = session.createTextMessage(jsonPerson);
+        message.setBooleanProperty("test", false);
+        jmsTemplate.convertAndSend(destinationTopic, jsonPerson);
     }
 
 }

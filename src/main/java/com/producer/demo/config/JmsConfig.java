@@ -10,7 +10,10 @@ import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.config.JmsListenerContainerFactory;
 import org.springframework.jms.core.JmsTemplate;
 
+import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
+import javax.jms.JMSException;
+import javax.jms.Session;
 
 @Configuration
 @EnableJms
@@ -39,12 +42,9 @@ public class JmsConfig {
         DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
         configurer.configure(factory, connectionFactory);
         factory.setPubSubDomain(true);
+        factory.setClientId("produtor");
+        factory.setSubscriptionDurable(true);
         return factory;
-    }
-
-    @Bean
-    public JmsTemplate jmsTemplate() {
-        return new JmsTemplate(connectionFactory());
     }
 
     @Bean

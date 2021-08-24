@@ -4,39 +4,30 @@ package com.producer.demo.resource;
 import com.producer.demo.jms.Producer;
 import com.producer.demo.model.Person;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.*;
 
-import javax.jms.JMSException;
-import javax.naming.NamingException;
 
+@Slf4j
 @RequiredArgsConstructor
-@Controller
+@RestController
+@RequestMapping("/demomq")
 public class PersonResource {
 
 	private final Producer producer;
 
-	@GetMapping("/")
-	public String index() {
-		return "index.html";
-	}
-
-	@GetMapping("/cadastra-pessoas")
-    private String cadastraPessoas(Model model){
-		return "cadastra-pessoas.html";
-    }
-	
-	@PostMapping(value="salvar")
-	public String save(@RequestParam("name") String name, @RequestParam("age") int age, Model model) throws JMSException, NamingException {
-		Person person = Person.builder()
-				.name(name)
-				.age(age)
-				.build();
-		producer.send(person);
-		return "/cadastra-pessoas";
+	@GetMapping("/teste")
+	public String save() {
+		try {
+			producer.send(Person.builder()
+					.age(21)
+					.name("Teste")
+					.id(1)
+					.build());
+		} catch(Exception e) {
+			log.error(e.getMessage());
+		}
+		return "vai lá";
 	}
 
 }
